@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Store</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #a8f4e6 0%, #f4f4f4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #2d3436;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 50px;
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .store-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .add-item-button {
+            padding: 12px 30px;
+            font-size: 1.1rem;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .add-item-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .product-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+        }
+
+        .product-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-name {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+
+        .product-price {
+            font-size: 1.2rem;
+            color: #4CAF50;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .cart-page {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .cart-list {
+            list-style: none;
+            margin-bottom: 30px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .remove-button {
+            padding: 8px 15px;
+            background: #ff4757;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .remove-button:hover {
+            background: #ff3846;
+            transform: scale(1.05);
+        }
+
+        .cart-total {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+
+        .buy-button {
+            padding: 15px 30px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 8px;
+            display: block;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .buy-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .toggle-cart {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            display: none;
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #4CAF50;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            font-size: 1.1rem;
+            font-weight: 500;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateX(-50%) translateY(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="successMessage" class="success-message">Bought successfully!</div>
+    <div class="container">
+        <h1>Welcome to Our Modern Store</h1>
+        
+        <div class="store-section">
+            <button class="add-item-button" onclick="showAddItemForm()">Add New Item</button>
+            <div id="productList" class="product-list"></div>
+        </div>
+
+        <div id="cartPage" class="cart-page">
+            <h2>Your Cart</h2>
+            <ul id="cartList" class="cart-list"></ul>
+            <div class="cart-total">Total: $<span id="totalPrice">0.00</span></div>
+            <button class="buy-button" onclick="redirectToCheckout()">Proceed to Checkout</button>
+        </div>
+
+        <div class="toggle-cart" onclick="toggleCartVisibility()">_CART</div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(sessionStorage.getItem('cart')) || [];
+        let itemsInStore = [];
+
+        function initializeStore() {
+            const productList = document.getElementById('productList');
+            productList.innerHTML = '';
+
+            itemsInStore.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.innerHTML = `
+                    <div class="product-name">${item.name}</div>
+                    <div class="product-price">$${item.price.toFixed(2)}</div>
+                    <button onclick="addToCart(${item.id})">Buy Now</button>
+                `;
+                productList.appendChild(card);
+            });
+        }
+
+        function showAddItemForm() {
+            const addItemForm = document.createElement('div');
+            addItemForm.innerHTML = `
+                <input type="text" id="newItemName" placeholder="Enter item name" style="padding: 10px; margin-right: 20px;">
+                <input type="number" id="newItemPrice" step="0.01" placeholder="Enter price" style="padding: 10px;">
+                <button onclick="addNewItem()" style="padding: 10px 30px;">Add to Store</button>
+            `;
+            
+            const productList = document.getElementById('productList');
+            productList.appendChild(addItemForm);
+        }
+
+        function addNewItem() {
+            const newItemName = document.getElementById('newItemName').value;
+            const newItemPrice = parseFloat(document.getElementById('newItemPrice').value);
+
+            if (!newItemName || isNaN(newItemPrice)) {
+                alert('Please fill in all fields correctly.');
+                return;
+            }
+
+            const newItem = {
+                id: itemsInStore.length + 1,
+                name: newItemName,
+                price: newItemPrice
+            };
+
+            itemsInStore.push(newItem);
+            cart.push(newItem);
+            
+            initializeStore();
+            document.getElementById('newItemName').value = '';
+            document.getElementById('newItemPrice').value = '';
+        }
+
+        function addToCart(itemId) {
+            const item = itemsInStore.find(item => item.id === itemId);
+            if (!item) return;
+
+            cart.push(item);
+            sessionStorage.setItem('cart', JSON.stringify(cart));
+            window.location.href = 'checkout.html';
+        }
+
+        function removeFromCart(itemId) {
+            const index = cart.findIndex(item => item.id === itemId);
+            if (index !== -1) {
+                cart.splice(index, 1);
+                sessionStorage.setItem('cart', JSON.stringify(cart));
+                initializeStore();
+                updateCartDisplay();
+                alert('Item removed from cart!');
+            }
+        }
+
+        function updateCartDisplay() {
+            const cartList = document.getElementById('cartList');
+            cartList.innerHTML = '';
+            
+            cart.forEach(item => {
+                const li = document.createElement('li');
+                li.className = 'cart-item';
+                li.innerHTML = `
+                    <span>${item.name}</span>
+                    <button class="remove-button" onclick="removeFromCart(${item.id})">Remove</button>
+                `;
+                cartList.appendChild(li);
+            });
+
+            const totalPrice = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('totalPrice').textContent = totalPrice.toFixed(2);
+        }
+
+        function toggleCartVisibility() {
+            const cartPage = document.getElementById('cartPage');
+            cartPage.style.display = cartPage.style.display === 'none' ? 'block' : 'none';
+            updateCartDisplay();
+        }
+
+        function redirectToCheckout() {
+            window.location.href = 'checkout.html';
+        }
+
+        // Initialize
+        window.onload = () => {
+            initializeStore();
+            const cartPage = document.getElementById('cartPage');
+            cartPage.style.display = 'none';
+            
+            // Check if coming from checkout and show success message
+            const wasPurchased = sessionStorage.getItem('purchaseCompleted');
+            if (wasPurchased) {
+                const successMessage = document.getElementById('successMessage');
+                successMessage.style.display = 'block';
+                
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+                
+                sessionStorage.removeItem('purchaseCompleted');
+            }
+            
+            // Add event listener for closing cart
+            window.addEventListener('click', (e) => {
+                if (!e.target.closest('#cartPage') && !e.target.closest('.toggle-cart')) {
+                    cartPage.style.display = 'none';
+                }
+            });
+        };
+    </script>
+</body>
+</html>
+
+
+
